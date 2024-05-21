@@ -6,7 +6,7 @@ const app = new Hono()
     return c.json({ message: 'Hello' })
   })
   .get('/:id', (c) => {
-    return c.json({ message: `Hello` })
+    return c.json({ message: `Hello ${c.req.param('id')}` })
   })
 
 export default app
