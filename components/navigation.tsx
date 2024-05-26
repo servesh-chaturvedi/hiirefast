@@ -43,7 +43,7 @@ export const Navigation = () => {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger>
           <Button variant="ghost">
-            <Menu className="size-5" />
+            <Menu />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-2">
@@ -53,6 +53,7 @@ export const Navigation = () => {
                 key={r.href}
                 variant={r.href === pathname ? 'secondary' : 'ghost'}
                 onClick={() => onClick(r.href)}
+                className="justify-start"
               >
                 {r.label}
               </Button>
@@ -84,7 +85,7 @@ type LinkProps = {
 }
 const NavLink = ({ href, label, isActive = false }: LinkProps) => {
   return (
-    <Button asChild variant="ghost" className="text-base">
+    <Button asChild variant="ghost">
       <Link href={href}>{label}</Link>
     </Button>
   )
