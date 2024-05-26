@@ -1,8 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { useMedia } from 'react-use'
+import { useState } from 'react'
+import { Menu } from 'lucide-react'
 
 const routes = [
   {
@@ -23,7 +27,42 @@ const routes = [
   },
 ]
 export const Navigation = () => {
+  const [isOpen, setIsOpen] = useState(false)
+
   const pathname = usePathname()
+  const router = useRouter()
+  const isMobile = useMedia('(max-width: 768px)', false)
+
+  const onClick = (href: string) => {
+    router.push(href)
+    setIsOpen(false)
+  }
+
+  if (isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger>
+          <Button variant="ghost">
+            <Menu className="size-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="p-2">
+          <nav className="flex flex-col gap-2 mt-12">
+            {routes.map((r) => (
+              <Button
+                key={r.href}
+                variant={r.href === pathname ? 'secondary' : 'ghost'}
+                onClick={() => onClick(r.href)}
+              >
+                {r.label}
+              </Button>
+            ))}
+          </nav>
+        </SheetContent>
+      </Sheet>
+    )
+  }
+
   return (
     <nav className="flex items-center gap-x-2">
       {routes.map((route) => (
@@ -45,7 +84,7 @@ type LinkProps = {
 }
 const NavLink = ({ href, label, isActive = false }: LinkProps) => {
   return (
-    <Button asChild variant="ghost" size="sm">
+    <Button asChild variant="ghost" className="text-base">
       <Link href={href}>{label}</Link>
     </Button>
   )
