@@ -15,7 +15,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { insertJobSchema } from '@/db/schema'
-import Link from 'next/link'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 const formSchema = insertJobSchema
   .pick({
@@ -34,47 +35,58 @@ export default function CreateJob() {
   })
 
   const { isValid, isSubmitting } = form.formState
+  const router = useRouter()
 
   const onSubmit = (values: FormValues) => {
     console.log(values)
+    toast.success('Job created!')
   }
 
   return (
-    <div className="max-w-md mx-auto">
-      <h1 className="text-2xl font-medium">Name your position</h1>
-      <p className="text-sm text-slate-600">
-        What would you like to name the position? Don&apos;t worry, you can
-        change this later.
-      </p>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="my-8 space-y-8">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Job Title</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="e.g. Software Engineer"
-                    type="text"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex items-center gap-x-4">
-            <Button asChild variant="outline">
-              <Link href="/dashboard">Cancel</Link>
-            </Button>
-            <Button disabled={!isValid || isSubmitting} type="submit">
-              Continue
-            </Button>
-          </div>
-        </form>
-      </Form>
+    <div className="min-h-dvh grid content-center">
+      <div className="max-w-md mx-auto px-4">
+        <h1 className="text-2xl font-medium">Name your position</h1>
+        <p className="text-sm text-slate-600">
+          What would you like to name the position? Don&apos;t worry, you can
+          change this later.
+        </p>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="my-8 space-y-8"
+          >
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="e.g. Software Engineer"
+                      type="text"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex flex-row-reverse items-center gap-x-4">
+              <Button disabled={!isValid || isSubmitting} type="submit">
+                Continue
+              </Button>
+              <Button
+                onClick={() => router.push('/dashboard')}
+                type="button"
+                variant="outline"
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   )
 }
