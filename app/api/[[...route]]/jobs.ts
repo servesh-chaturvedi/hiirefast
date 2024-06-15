@@ -1,14 +1,39 @@
 import { Hono } from 'hono'
 import { db } from '@/db/drizzle'
-import { jobs } from '@/db/schema'
+import { zValidator } from '@hono/zod-validator'
+import { insertJobSchema, jobs } from '@/db/schema'
+import { createId } from '@paralleldrive/cuid2'
 
 const app = new Hono()
   .get('/', async (c) => {
     const jobList = await db.select().from(jobs)
     return c.json({ data: jobList })
   })
-  .get('/:id', (c) => {
-    return c.json({ message: `Hello ${c.req.param('id')}` })
-  })
+  .post(
+    '/',
+    zValidator(
+      'json',
+      insertJobSchema.pick({
+        title: true,
+        tags: true,
+        introUrl: true,
+        liveUntil: true,
+      })
+    ),
+    async (c) => {
+      const values = c.req.valid('json')
+
+      const [data] = await db
+        .insert(jobs)
+        .values({
+          id: createId(),
+          userId: createId(),
+          ...values,
+        })
+        .returning()
+
+      return c.json({ data })
+    }
+  )
 
 export default app

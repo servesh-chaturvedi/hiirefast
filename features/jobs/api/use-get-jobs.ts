@@ -7,10 +7,10 @@ export const useGetJobs = () => {
     queryFn: async () => {
       const res = await client.api.jobs.$get()
 
-      if (!res.ok) throw new Error('Failed to get jobs')
+      if (!res.ok) throw new Error('Failed to fetch jobs')
 
-      const { message } = await res.json()
-      return message
+      const { data } = await res.json()
+      return data
     },
   })
   return query
