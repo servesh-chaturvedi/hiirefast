@@ -1,4 +1,6 @@
+'use client'
 import { IconBadge } from '@/components/icon-badge'
+import { useGetJob } from '@/features/jobs/api/use-get-job'
 import { TitleForm } from '@/features/jobs/components/title-form'
 import { LayoutDashboard } from 'lucide-react'
 
@@ -11,7 +13,13 @@ type Props = {
 export default function JobIdPage({ params }: Props) {
   const { jobId } = params
 
-  const requiredFields: string[] = []
+  const { data: job } = useGetJob(jobId)
+
+  if (!job) {
+    return null
+  }
+
+  const requiredFields: string[] = [job.title]
   const completedFields = requiredFields.filter(Boolean).length
 
   const completionText = `(${completedFields}/${requiredFields.length})`
@@ -30,7 +38,7 @@ export default function JobIdPage({ params }: Props) {
             <IconBadge icon={LayoutDashboard} />
             <h2 className="text-xl font-medium">Customise your position</h2>
           </div>
-          <TitleForm title="123" />
+          <TitleForm title={job.title} />
         </div>
       </div>
     </div>

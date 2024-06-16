@@ -3,11 +3,23 @@ import { db } from '@/db/drizzle'
 import { zValidator } from '@hono/zod-validator'
 import { insertJobSchema, jobs } from '@/db/schema'
 import { createId } from '@paralleldrive/cuid2'
+import { eq } from 'drizzle-orm'
 
 const app = new Hono()
   .get('/', async (c) => {
     const jobList = await db.select().from(jobs)
     return c.json({ data: jobList })
+  })
+  .get('/:jobId', async (c) => {
+    const [jobById] = await db
+      .select()
+      .from(jobs)
+      .where(eq(jobs.id, c.req.param('jobId')))
+
+    if (!jobById) {
+      return c.json({ error: 'Job not found' }, 404)
+    }
+    return c.json({ data: jobById })
   })
   .post(
     '/',
