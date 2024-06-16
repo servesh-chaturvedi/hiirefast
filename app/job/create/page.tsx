@@ -15,8 +15,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { insertJobSchema } from '@/db/schema'
-import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { useCreateJob } from '@/features/jobs/api/use-create-job'
 
 const formSchema = insertJobSchema
   .pick({
@@ -34,12 +34,12 @@ export default function CreateJob() {
     },
   })
 
-  const { isValid, isSubmitting } = form.formState
+  const { isValid } = form.formState
   const router = useRouter()
+  const mutation = useCreateJob()
 
   const onSubmit = (values: FormValues) => {
-    console.log(values)
-    toast.success('Job created!')
+    mutation.mutate(values)
   }
 
   return (
@@ -73,7 +73,7 @@ export default function CreateJob() {
               )}
             />
             <div className="flex flex-row-reverse items-center gap-x-4">
-              <Button disabled={!isValid || isSubmitting} type="submit">
+              <Button disabled={!isValid || mutation.isPending} type="submit">
                 Continue
               </Button>
               <Button

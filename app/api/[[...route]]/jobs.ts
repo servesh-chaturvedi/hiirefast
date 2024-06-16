@@ -15,9 +15,6 @@ const app = new Hono()
       'json',
       insertJobSchema.pick({
         title: true,
-        tags: true,
-        introUrl: true,
-        liveUntil: true,
       })
     ),
     async (c) => {
