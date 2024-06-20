@@ -4,10 +4,20 @@ import { zValidator } from '@hono/zod-validator'
 import { insertJobSchema, jobs } from '@/db/schema'
 import { createId } from '@paralleldrive/cuid2'
 import { eq } from 'drizzle-orm'
+import * as z from 'zod'
 
 const app = new Hono()
   .get('/', async (c) => {
-    const jobList = await db.select().from(jobs)
+    const jobList = await db
+      .select({
+        id: jobs.id,
+        userId: jobs.userId,
+        title: jobs.title,
+        introUrl: jobs.introUrl,
+        tags: jobs.tags,
+        isPublished: jobs.isPublished,
+      })
+      .from(jobs)
     return c.json({ data: jobList })
   })
   .get('/:jobId', async (c) => {
@@ -39,6 +49,23 @@ const app = new Hono()
           userId: createId(),
           ...values,
         })
+        .returning()
+
+      return c.json({ data })
+    }
+  )
+  .patch(
+    '/:jobId',
+    zValidator(
+      'json',
+      z.object({ ...insertJobSchema.shape, title: z.string().optional() })
+    ),
+    async (c) => {
+      const values = c.req.valid('json')
+      const [data] = await db
+        .update(jobs)
+        .set(values)
+        .where(eq(jobs.id, c.req.param('jobId')))
         .returning()
 
       return c.json({ data })

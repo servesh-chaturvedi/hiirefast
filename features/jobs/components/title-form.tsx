@@ -17,6 +17,8 @@ import { Input } from '@/components/ui/input'
 import { Pencil } from 'lucide-react'
 import { useState } from 'react'
 import { insertJobSchema } from '@/db/schema'
+import { useEditJob } from '../api/use-edit-job'
+import { useParams } from 'next/navigation'
 
 type TitleFormProps = {
   title: string
@@ -31,6 +33,10 @@ const formSchema = insertJobSchema
 type FormValues = z.input<typeof formSchema>
 export const TitleForm = ({ title }: TitleFormProps) => {
   const [isEditing, setIsEditing] = useState(false)
+
+  const params = useParams()
+
+  const editMutation = useEditJob(params.jobId as string)
   const toggleEdit = () => setIsEditing((prev) => !prev)
 
   const form = useForm<FormValues>({
@@ -43,12 +49,13 @@ export const TitleForm = ({ title }: TitleFormProps) => {
   const { isValid } = form.formState
 
   const onSubmit = (values: FormValues) => {
-    console.log(values)
+    // console.log(values)
+    editMutation.mutate(values)
     toggleEdit()
   }
 
   return (
-    <div className="px-4 py-2 mt-6 border bg-slate-100 rounded-md">
+    <div className="px-4 py-2 mt-4 border bg-slate-100 rounded-md">
       <div className="flex items-center justify-between font-medium">
         Position Title
         <Button onClick={toggleEdit} variant="ghost" className="p-2 h-auto">

@@ -7,7 +7,7 @@ import {
   boolean,
 } from 'drizzle-orm/pg-core'
 
-import { createInsertSchema } from 'drizzle-zod'
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 
 export const job_status_enum = pgEnum('job_status', ['open', 'closed'])
 
@@ -23,4 +23,9 @@ export const jobs = pgTable('jobs', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 })
 
-export const insertJobSchema = createInsertSchema(jobs)
+export const insertJobSchema = createInsertSchema(jobs).pick({
+  title: true,
+  introUrl: true,
+  tags: true,
+  isPublished: true,
+})
